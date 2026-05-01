@@ -1,10 +1,12 @@
 package com.shoaib.project_management.exception;
 
 import com.shoaib.project_management.dto.ApiErrorResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -16,13 +18,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleRuntimeException(
             RuntimeException ex
     ) {
+
         ApiErrorResponse error = ApiErrorResponse.builder()
                 .message(ex.getMessage())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+                error,
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -44,15 +50,28 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+                error,
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGeneralException(
-            Exception ex
-    ) {
+            Exception ex,
+            HttpServletRequest request
+    ) throws Exception {
+
+        String path = request.getRequestURI();
+
+        if (path.contains("swagger") || path.contains("api-docs")) {
+            throw ex;
+        }
+
+        ex.printStackTrace();
+
         ApiErrorResponse error = ApiErrorResponse.builder()
-                .message("Something went wrong")
+                .message(ex.getMessage())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .timestamp(LocalDateTime.now())
                 .build();
