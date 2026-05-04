@@ -29,14 +29,14 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100">
+    <div className="min-h-screen p-6 bg-gray-900 text-white">
 
       <h1 className="text-2xl font-bold mb-6">Admin Panel</h1>
 
       <div className="grid grid-cols-2 gap-6">
 
         {/* Project */}
-        <div className="p-6 bg-white rounded shadow">
+        <div className="p-6 bg-gray-800  rounded shadow">
           <h2 className="font-bold mb-4">Create Project</h2>
 
           <input
@@ -64,7 +64,7 @@ export default function Admin() {
         </div>
 
         {/* Task */}
-        <div className="p-6 bg-white rounded shadow">
+        <div className="p-6 bg-gray-800  rounded shadow">
           <h2 className="font-bold mb-4">Create Task</h2>
 
           <input

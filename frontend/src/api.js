@@ -1,1 +1,1 @@
-export const BASE_URL = "https://project-management-production-fde0.up.railway.app";
+export const BASE_URL = "https://project-management-production-115f.up.railway.app";

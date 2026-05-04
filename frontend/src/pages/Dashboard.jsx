@@ -4,6 +4,7 @@ import API from "../api/axios";
 export default function Dashboard() {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
+
   const role = localStorage.getItem("role");
   const email = localStorage.getItem("email");
 
@@ -20,74 +21,107 @@ export default function Dashboard() {
   const count = (status) =>
     tasks.filter(t => t.status === status).length;
 
+  const statusColor = (status) => {
+    if (status === "COMPLETED") return "bg-green-100 text-green-600";
+    if (status === "IN_PROGRESS") return "bg-yellow-100 text-yellow-600";
+    return "bg-red-100 text-red-600";
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-900 text-white flex">
 
-      {/* Navbar */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+      {/* 🔹 Sidebar */}
+      <div className="w-64 bg-gray-800 shadow-md p-6 hidden md:block">
+        <h2 className="text-xl font-bold mb-6 text-indigo-600">PM Tool</h2>
 
-        <div className="flex gap-3 items-center">
-          <span className="text-sm">{email}</span>
+        <ul className="space-y-4">
+          <li className="font-semibold text-gray-700">Dashboard</li>
+          <li className="text-gray-500 cursor-pointer hover:text-indigo-600">Projects</li>
+          <li className="text-gray-500 cursor-pointer hover:text-indigo-600">Tasks</li>
+        </ul>
+      </div>
 
-          {role === "ADMIN" && (
+      {/* 🔹 Main Content */}
+      <div className="flex-1 p-6">
+
+        {/* 🔹 Topbar */}
+        <div className="flex justify-between items-center mb-6 bg-gray-800 p-4 rounded-xl shadow">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+
+          <div className="flex gap-4 items-center">
+            <span className="text-sm text-gray-600">{email}</span>
+
+            {role === "ADMIN" && (
+              <button
+                onClick={() => window.location.href="/admin"}
+                className="bg-indigo-500 hover:bg-indigo-600 px-3 py-1 rounded text-white"
+              >
+                Admin
+              </button>
+            )}
+
             <button
-              onClick={() => window.location.href="/admin"}
-              className="bg-yellow-500 px-3 py-1 rounded text-white"
+              onClick={logout}
+              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white"
             >
-              Admin
+              Logout
             </button>
+          </div>
+        </div>
+
+        {/* 🔹 Stats */}
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
+          <div className="bg-gray-800 p-6 rounded-xl shadow hover:-translate-y-1 transition">
+            <h3 className="text-gray-500">Pending</h3>
+            <p className="text-2xl font-bold text-red-500">{count("PENDING")}</p>
+          </div>
+
+          <div className="bg-gray-800 p-6 rounded-xl shadow hover:-translate-y-1 transition">
+            <h3 className="text-gray-500">In Progress</h3>
+            <p className="text-2xl font-bold text-yellow-500">{count("IN_PROGRESS")}</p>
+          </div>
+
+          <div className="bg-gray-800 p-6 rounded-xl shadow hover:-translate-y-1 transition">
+            <h3 className="text-gray-500">Completed</h3>
+            <p className="text-2xl font-bold text-green-500">{count("COMPLETED")}</p>
+          </div>
+        </div>
+
+        {/* 🔹 Projects */}
+        <h2 className="text-xl font-semibold mb-3">Projects</h2>
+
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
+          {projects.length === 0 ? (
+            <p className="text-gray-500">No projects yet</p>
+          ) : (
+            projects.map(p => (
+              <div key={p.id} className="p-5 bg-gray-800 rounded-xl shadow hover:-translate-y-1 transition">
+                <h3 className="font-bold text-lg">{p.name}</h3>
+                <p className="text-sm text-gray-600 mt-2">{p.description}</p>
+              </div>
+            ))
           )}
-
-          <button
-            onClick={logout}
-            className="bg-red-500 px-3 py-1 rounded text-white"
-          >
-            Logout
-          </button>
         </div>
-      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded shadow text-center">
-          <h3 className="text-gray-500">Pending</h3>
-          <p className="text-xl font-bold">{count("PENDING")}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow text-center">
-          <h3 className="text-gray-500">In Progress</h3>
-          <p className="text-xl font-bold">{count("IN_PROGRESS")}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow text-center">
-          <h3 className="text-gray-500">Completed</h3>
-          <p className="text-xl font-bold">{count("COMPLETED")}</p>
-        </div>
-      </div>
+        {/* 🔹 Tasks */}
+        <h2 className="text-xl font-semibold mb-3">My Tasks</h2>
 
-      {/* Projects */}
-      <h2 className="text-xl mb-2 font-semibold">Projects</h2>
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        {projects.map(p => (
-          <div key={p.id} className="p-4 bg-white rounded shadow hover:scale-105 transition">
-            <h3 className="font-bold">{p.name}</h3>
-            <p className="text-sm text-gray-600">{p.description}</p>
-          </div>
-        ))}
-      </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {tasks.length === 0 ? (
+            <p className="text-gray-500">No tasks assigned</p>
+          ) : (
+            tasks.map(t => (
+              <div key={t.id} className="p-5 bg-gray-800 rounded-xl shadow hover:-translate-y-1 transition">
+                <h3 className="font-bold text-lg">{t.title}</h3>
 
-      {/* Tasks */}
-      <h2 className="text-xl mb-2 font-semibold">My Tasks</h2>
-      <div className="grid grid-cols-3 gap-4">
-        {tasks.map(t => (
-          <div key={t.id} className="p-4 bg-white rounded shadow">
-            <h3 className="font-bold">{t.title}</h3>
-            <p className="text-sm">Status: 
-              <span className="ml-2 font-semibold text-blue-500">
-                {t.status}
-              </span>
-            </p>
-          </div>
-        ))}
+                <span className={`inline-block mt-3 px-3 py-1 text-sm rounded ${statusColor(t.status)}`}>
+                  {t.status}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+
       </div>
     </div>
   );

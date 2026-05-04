@@ -27,7 +27,7 @@ export default function Login() {
       bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
 
       <div className="w-full max-w-md p-8 rounded-2xl
-        bg-white/20 backdrop-blur-xl shadow-2xl">
+        bg-gray-800/20 backdrop-blur-xl shadow-2xl">
 
         <h2 className="text-3xl font-bold text-center text-white mb-6">
           Welcome Back
