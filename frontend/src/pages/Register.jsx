@@ -6,8 +6,7 @@ export default function Register() {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    password: "",
-    role: "MEMBER", // ✅ default role fixed
+    password: ""
   });
 
   const handleRegister = async () => {
@@ -18,7 +17,7 @@ export default function Register() {
       window.location.href = "/";
 
     } catch (err) {
-      console.log(err.response?.data); // 🔥 debug
+      console.log(err.response?.data);
       alert(err.response?.data?.message || "Registration failed ❌");
     }
   };
@@ -66,16 +65,7 @@ export default function Register() {
             }
           />
 
-          {/* ✅ ROLE FIXED (IMPORTANT) */}
-          <select
-            className="w-full p-3 rounded bg-white/80 outline-none"
-            onChange={(e) =>
-              setForm({ ...form, role: e.target.value })
-            }
-          >
-            <option value="MEMBER">User</option>
-            <option value="ADMIN">Admin</option>
-          </select>
+          {/* ❌ ROLE REMOVED (SECURITY FIX) */}
 
           {/* ✅ BUTTON */}
           <button

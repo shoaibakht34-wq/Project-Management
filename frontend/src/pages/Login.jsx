@@ -5,23 +5,40 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    try {
-      setLoading(true);
-      const res = await API.post("/api/auth/login", form);
+ const handleLogin = async () => {
+  try {
+    setLoading(true);
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.role);
-      localStorage.setItem("email", res.data.email);
+    const res = await API.post("/api/auth/login", form);
 
-      window.location.href = "/dashboard";
-    } catch {
-      alert("Invalid email or password ❌");
-    } finally {
-      setLoading(false);
+    const token = res.data.token;
+
+    // ✅ save token
+    localStorage.setItem("token", token);
+
+    // ✅ extract email from JWT manually (no library needed)
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    const email = payload.sub; // JWT subject = email
+
+    localStorage.setItem("email", email);
+
+    // ✅ TEMP ROLE LOGIC (frontend only)
+    if (email === "shoaibak0189@gmail.com") {
+      localStorage.setItem("role", "ADMIN");
+    } else {
+      localStorage.setItem("role", "MEMBER");
     }
-  };
 
+    window.location.href = "/dashboard";
+
+  } catch (err) {
+    console.log(err.response?.data);
+    alert("Invalid email or password ❌");
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="h-screen flex items-center justify-center
       bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">

@@ -1,6 +1,7 @@
 package com.shoaib.project_management.service;
 
 import com.shoaib.project_management.dto.*;
+import com.shoaib.project_management.entity.Role;
 import com.shoaib.project_management.entity.User;
 import com.shoaib.project_management.repository.UserRepository;
 import com.shoaib.project_management.security.JwtService;
@@ -20,23 +21,27 @@ public class AuthService {
  
     public AuthResponse register(RegisterRequest request) {
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
-        }
-
-        User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
-                .build();
-
-        userRepository.save(user);
-
-        String token = jwtService.generateToken(user.getEmail());
-
-        return new AuthResponse(token, "User registered successfully");
+    if (userRepository.existsByEmail(request.getEmail())) {
+        throw new RuntimeException("Email already registered");
     }
+
+    User user = User.builder()
+            .name(request.getName())
+            .email(request.getEmail())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .role(
+                request.getEmail().equals("shoaibak0189@gmail.com")
+                    ? Role.ADMIN
+                    : Role.MEMBER
+            )
+            .build();
+
+    userRepository.save(user);
+
+    String token = jwtService.generateToken(user.getEmail());
+
+    return new AuthResponse(token, "User registered successfully");
+}
 
     public AuthResponse login(LoginRequest request) {
 
