@@ -27,33 +27,28 @@ protected void doFilterInternal(HttpServletRequest request,
                                 FilterChain filterChain)
         throws ServletException, IOException {
 
-    String path = request.getServletPath();
+    String path = request.getRequestURI();
 
-
-    if (
-        path.startsWith("/api/auth") ||
+    if (path.startsWith("/api/auth") ||
         path.startsWith("/v3/api-docs") ||
-        path.startsWith("/swagger-ui") ||
-        path.equals("/swagger-ui.html")
-    ) {
+        path.startsWith("/swagger-ui")) {
+
         filterChain.doFilter(request, response);
         return;
     }
 
     final String authHeader = request.getHeader("Authorization");
-    final String jwt;
-    final String userEmail;
 
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
         filterChain.doFilter(request, response);
         return;
     }
 
-    jwt = authHeader.substring(7);
-    userEmail = jwtService.extractUsername(jwt);
+    String jwt = authHeader.substring(7);
+    String userEmail = jwtService.extractUsername(jwt);
 
     if (userEmail != null &&
-            SecurityContextHolder.getContext().getAuthentication() == null) {
+        SecurityContextHolder.getContext().getAuthentication() == null) {
 
         UserDetails userDetails =
                 userDetailsService.loadUserByUsername(userEmail);
@@ -66,11 +61,6 @@ protected void doFilterInternal(HttpServletRequest request,
                             null,
                             userDetails.getAuthorities()
                     );
-
-            authToken.setDetails(
-                    new WebAuthenticationDetailsSource()
-                            .buildDetails(request)
-            );
 
             SecurityContextHolder.getContext()
                     .setAuthentication(authToken);
