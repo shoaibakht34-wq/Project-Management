@@ -45,7 +45,6 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "http://localhost:5174",
                                "/api/auth/**",
                                "/v3/api-docs/**",
                                "/swagger-ui/**",
@@ -83,7 +82,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(
                 List.of(
                         "http://localhost:5173",
-                        "http://127.0.0.1:5173"
+                        "http://127.0.0.1:5173",
+                        "https://project-management-ten-zeta.vercel.app"
                 )
         );
 
